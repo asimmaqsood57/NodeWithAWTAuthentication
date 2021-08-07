@@ -55,4 +55,20 @@ app.post("/register", jsonParser, (req, res) => {
     .catch((err) => console.log(err));
 });
 
+app.post("/login", jsonParser, (req, res) => {
+  User.findOne({ email: req.body.email }).then((data) => {
+    var dicipher = crypto.createDecipher(algo, key);
+    var decrypted =
+      dicipher.update(data.password, "hex", "utf8") + dicipher.final("utf8");
+
+    if (decrypted == req.body.password) {
+      jwt.sign({ data }, jwtKey, { expiresIn: "300s" }, (err, token) => {
+        res.status(200).json({ token });
+      });
+    }
+    // console.log("decrypted ", decrypted);
+    // res.json(data);
+  });
+});
+
 app.listen(80);
