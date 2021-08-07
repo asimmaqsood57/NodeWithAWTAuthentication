@@ -8,6 +8,9 @@ const User = require("./models/user");
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 
+const jwt = require("jsonwebtoken");
+
+jwtKey = "jwt";
 var crypto = require("crypto");
 
 var key = "password";
@@ -43,7 +46,11 @@ app.post("/register", jsonParser, (req, res) => {
   data
     .save()
     .then((result) => {
-      res.status(201).json(result);
+      jwt.sign({ result }, jwtKey, { expiresIn: "300s" }, (err, token) => {
+        res.status(201).json({ token });
+      });
+
+      //   res.status(201).json(result);
     })
     .catch((err) => console.log(err));
 });
